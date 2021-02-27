@@ -106,7 +106,6 @@ function getImageCarousal(){
           document.getElementsByClassName("banner_01")[i+1].src = resultJson.data[i];
         }
         getOfferProduct();
-        displayProductItems();
       }
     };
     xhttp.open("GET", "http://localhost:5000/api/v1/home/imageCarousal", true);
@@ -125,6 +124,7 @@ function getOfferProduct(){
         document.getElementsByClassName("offerCutPrice")[j].innerText = "$" + resultJson.data[i][3];
         document.getElementsByClassName("offerPrice")[j++].innerHTML = "$" +resultJson.data[i][4];
       }
+      displayProductItems();
     }
   };
   xhttp.open("GET", "http://localhost:5000/api/v1/home/offer", true);
@@ -138,61 +138,18 @@ const displayProductItems = () => {
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
       var resultJson = JSON.parse(this.responseText);
+      console.log(resultJson,"resultJson")
       let newHTML = '';
       for(let i=0;i<resultJson.data.length;i++){
         newHTML +=
           ` 
                       <div class="product category__products">
                         <div class="product__header">
-                          <img src=${resultJson.data[i]} alt="product">
+                          <img src=${resultJson.data[i][2]} alt="product">
                         </div>
                         <div class="product__footer">
-                          <h3>${product.title}</h3>
-                          <div class="rating">
-                            <svg>
-                              <use xlink:href="./images/sprite.svg#icon-star-full"></use>
-                            </svg>
-                            <svg>
-                              <use xlink:href="./images/sprite.svg#icon-star-full"></use>
-                            </svg>
-                            <svg>
-                              <use xlink:href="./images/sprite.svg#icon-star-full"></use>
-                            </svg>
-                            <svg>
-                              <use xlink:href="./images/sprite.svg#icon-star-full"></use>
-                            </svg>
-                            <svg>
-                              <use xlink:href="./images/sprite.svg#icon-star-empty"></use>
-                            </svg>
-                          </div>
-                          <div class="product__price">
-                            <h4>$${product.price}</h4>
-                          </div>
-                          <a href="#"><button type="submit" class="product__btn">Add To Cart</button></a>
+                          <h3>${resultJson.data[i][1]}</h3>
                         </div>
-                      <ul>
-                          <li>
-                            <a data-tip="Quick View" data-place="left" href="#">
-                              <svg>
-                                <use xlink:href="./images/sprite.svg#icon-eye"></use>
-                              </svg>
-                            </a>
-                          </li>
-                          <li>
-                            <a data-tip="Add To Wishlist" data-place="left" href="#">
-                              <svg>
-                                <use xlink:href="./images/sprite.svg#icon-heart-o"></use>
-                              </svg>
-                            </a>
-                          </li>
-                          <li>
-                            <a data-tip="Add To Compare" data-place="left" href="#">
-                              <svg>
-                                <use xlink:href="./images/sprite.svg#icon-loop2"></use>
-                              </svg>
-                            </a>
-                          </li>
-                      </ul>
                       </div>
                       `
         }
@@ -204,4 +161,16 @@ const displayProductItems = () => {
   xhttp.open("GET", "http://localhost:5000/api/v1/home/category", true);
   xhttp.send();
 };
-  
+
+function onCartClick(product_id){
+  let xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+            var resultJson = JSON.parse(this.responseText);
+            console.log(resultJson,"resultJson")
+            localStorage.setItem(product_id,`${resultJson.data[0][1]}|${resultJson.data[0][2]}|${resultJson.data[0][4]}`);
+            }
+        };
+        xhttp.open("GET", `http://localhost:5000/api/v1/category/getProduct?product=${product_id}`, true);
+        xhttp.send();
+}
