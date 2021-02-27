@@ -40,8 +40,11 @@ def offer():
 # 
 @app.route("/api/v1/category/getProduct")
 def categoryOne():
-    page = request.args.get('page')
-    return page
+    code = request.args.get('product')
+    print(code)
+    cursor.execute("select * from product where id = "+code)
+    data = cursor.fetchall()
+    return {"data":data}
 
 @app.route("/api/v1/category/getAllProducts")
 def categoryGetProduct():
